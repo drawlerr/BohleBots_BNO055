@@ -72,14 +72,15 @@
 class BNO
 {
 	public:
-		BNO();
+		BNO(uint8_t impact, bool forward);
 		int16_t getHeading();
 		bool getImpact();
+		bool isInitialized();
 		bool isCalibrated();
 		uint8_t getCalibration();
 		void saveOffsets(unsigned int address);
 		void loadOffsets(unsigned int address);
-		void startBNO(uint8_t impact, bool forward);
+		void startBNO();
 		void serialPrintCalibStat();
 		void setReference();
 		int16_t getRLHeading();
@@ -137,8 +138,13 @@ class BNO
 			int16_t mag_rad;
 		} _offsetData;
 		struct calibOffsets _offsetCache = {};
-		bool _cached = false;
-    		int16_t _reference;
+
+		bool _cached;
+		int16_t _reference;
+		bool _initialized;
+		bool _forward;
+		uint8_t _impact;
+
 		void writePhase(uint8_t regaddr);
 		uint8_t readRegister(uint8_t regaddr);
 		uint16_t readRegister16(uint8_t regaddr);

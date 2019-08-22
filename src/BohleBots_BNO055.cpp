@@ -25,7 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /***** Public Functions *****/
 
-BNO::BNO()
+BNO::BNO(uint8_t impact, bool forward)
+:_initialized(false), _cached(false), _impact(impact), _forward(forward)
 {
 }
 
@@ -60,6 +61,11 @@ bool BNO::isCalibrated()	//Gets the latest calibration values and does a bitwise
 	getCalibStat(&_calibData);
 	if((_calibData.sys & _calibData.gyr & _calibData.acc & _calibData.mag) == 3) return true;
 	return false;
+}
+
+bool BNO::isInitialized()
+{
+    return _initialized;
 }
 
 uint8_t BNO::getCalibration()
@@ -108,8 +114,12 @@ void BNO::loadOffsets(unsigned int address)	//loads offsets structure from eepro
 	}
 }
 
-void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and puts the Compass into NDOF fusion mode
+void BNO::startBNO()	//enables High_g Interrupt and puts the Compass into NDOF fusion mode
 {
+	if (_initialized)
+	{
+		return;
+	}
 	writeRegister(PAGE_ID_ADDR, 0);
 	writeRegister(OPR_MODE_ADDR, OPR_MODE_CONFIG);
 	delay(19);
@@ -120,10 +130,10 @@ void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and 
 	writeRegister(INT_MSK_ADDR, B00000000);
 	writeRegister(ACC_INT_SETTINGS_ADDR, B01100000);
 	writeRegister(ACC_HG_DURATION_ADDR, 1);
-	writeRegister(ACC_HG_THRES_ADDR, impact);
-	if(forward)
+	writeRegister(ACC_HG_THRES_ADDR, _impact);
+	if(_forward)
 	{
-	       	writeRegister(INT_MSK_ADDR, B00100000);
+	    writeRegister(INT_MSK_ADDR, B00100000);
 	}else
 	{
 		writeRegister(INT_MSK_ADDR, B00000000);
@@ -141,6 +151,10 @@ void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and 
 		Serial.print("SYS_STATUS:\t");  Serial.println(sysStatus, DEC);
 		Serial.println("SYS_STATUS should be 5!");
 	}
+	else
+    {
+	    _initialized = true;
+    }
 }
 
 void BNO::setReference()
