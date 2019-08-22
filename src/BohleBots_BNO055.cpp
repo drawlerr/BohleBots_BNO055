@@ -189,14 +189,14 @@ int16_t BNO::getRLHeadingAuto(unsigned int addr)
 
 /***** Private Functions *****/
 
-inline void BNO::writePhase(uint8_t regaddr)	//Write Phase needed to tell from which address we want to read
+void BNO::writePhase(uint8_t regaddr)	//Write Phase needed to tell from which address we want to read
 {
 	Wire.beginTransmission(BNO_ADDR);
 	Wire.write(regaddr);
 	Wire.endTransmission();
 }
 
-inline uint8_t BNO::readRegister(uint8_t regaddr)	//reads byte from a register
+uint8_t BNO::readRegister(uint8_t regaddr)	//reads byte from a register
 {
 	uint8_t value = 0;
 	writePhase(regaddr);
@@ -206,7 +206,7 @@ inline uint8_t BNO::readRegister(uint8_t regaddr)	//reads byte from a register
 	return value;
 }
 
-inline uint16_t BNO::readRegister16(uint8_t regaddr)
+uint16_t BNO::readRegister16(uint8_t regaddr)
 {
 	uint16_t value = 0;
 	uint8_t tmp = 0;
@@ -219,7 +219,7 @@ inline uint16_t BNO::readRegister16(uint8_t regaddr)
 	return value;
 }
 
-inline void BNO::writeRegister(uint8_t regaddr, uint8_t value)	//writes byte to a register
+void BNO::writeRegister(uint8_t regaddr, uint8_t value)	//writes byte to a register
 {
 	Wire.beginTransmission(BNO_ADDR);
 	Wire.write(regaddr);
