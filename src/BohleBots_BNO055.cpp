@@ -187,6 +187,12 @@ int16_t BNO::getRLHeadingAuto(unsigned int addr)
 	return getRLHeading();
 }
 
+int16_t BNO::getZAccel()
+{
+    uint16_t z_accel = readRegister16(ACC_Z_LSB_ADDR);
+    return z_accel/16;
+}
+
 /***** Private Functions *****/
 
 void BNO::writePhase(uint8_t regaddr)	//Write Phase needed to tell from which address we want to read

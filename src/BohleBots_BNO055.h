@@ -69,6 +69,9 @@
 #define ACC_HG_THRES_ADDR 0x14
 #define INT_MSK_ADDR 0x1F
 
+#define ACC_Z_LSB_ADDR 0X2C
+#define ACC_Z_MSB_ADDR 0X2D
+
 class BNO
 {
 	public:
@@ -88,7 +91,9 @@ class BNO
 		int16_t getRLHeadingAuto(unsigned int addr);
 		int16_t getPitch();
 		int16_t getRoll();
-	private:
+		int16_t getZAccel();
+
+private:
 		struct sysInfo
 		{
 			uint8_t chip_id;
