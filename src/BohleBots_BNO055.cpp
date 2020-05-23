@@ -26,8 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /***** Public Functions *****/
 
 BNO::BNO(uint8_t impact, bool forward)
-:_initialized(false), _cached(false), _impact(impact), _forward(forward)
 {
+    _initialized = false;
+    _cached = false;
+    _impact = impact;
+    _forward = forward;
 }
 
 int16_t BNO::getHeading()	//reads the lSB and MSB of the EUL_HEADING and outputs the combined value
@@ -59,8 +62,7 @@ bool BNO::getImpact()	//reads the INT_STA Register to check if a High_G event oc
 bool BNO::isCalibrated()	//Gets the latest calibration values and does a bitwise and to return a true if everything is fully calibrated
 {
 	getCalibStat(&_calibData);
-	if((_calibData.sys & _calibData.gyr & _calibData.acc & _calibData.mag) == 3) return true;
-	return false;
+    return (_calibData.sys & _calibData.gyr & _calibData.acc & _calibData.mag) == 3;
 }
 
 bool BNO::isInitialized()
