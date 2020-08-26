@@ -84,10 +84,10 @@ uint8_t BNO::getCalibration()
 void BNO::serialPrintCalibStat()	//gets the latest calibration values and prints them via serial
 {
 	getCalibStat(&_calibData);
-	Serial.print("CALIB_STAT_SYSTEM:\t");  Serial.println(_calibData.sys, DEC);
-	Serial.print("CALIB_STAT_GYR:\t");  Serial.println(_calibData.gyr, DEC);
-	Serial.print("CALIB_STAT_ACC:\t");  Serial.println(_calibData.acc, DEC);
-	Serial.print("CALIB_STAT_MAG:\t");  Serial.println(_calibData.mag, DEC);
+	Serial.print(F("CALIB_STAT_SYSTEM:\t"));  Serial.println(_calibData.sys, DEC);
+	Serial.print(F("CALIB_STAT_GYR:\t"));  Serial.println(_calibData.gyr, DEC);
+	Serial.print(F("CALIB_STAT_ACC:\t"));  Serial.println(_calibData.acc, DEC);
+	Serial.print(F("CALIB_STAT_MAG:\t"));  Serial.println(_calibData.mag, DEC);
 }
 
 void BNO::saveOffsets(unsigned int address)	//saves offset structure into eeprom at byte 100 upwards
@@ -150,8 +150,8 @@ void BNO::startBNO()	//enables High_g Interrupt and puts the Compass into NDOF f
 	uint8_t sysStatus = readRegister(SYS_STATUS_ADDR);
 	if(sysStatus != 5)
 	{
-		Serial.print("SYS_STATUS:\t");  Serial.println(sysStatus, DEC);
-		Serial.println("SYS_STATUS should be 5!");
+		Serial.print(F("SYS_STATUS:\t"));  Serial.println(sysStatus, DEC);
+		Serial.println(F("SYS_STATUS should be 5!"));
 	}
 	else
     {
