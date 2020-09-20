@@ -8,7 +8,23 @@
 
 //OPRMODES
 #define OPR_MODE_CONFIG B0000
+#define OPR_MODE_IMU B1000
+#define OPR_MODE_COMPASS B1001
 #define OPR_MODE_NDOF B1100
+
+//DELAYS
+#define SU_TIME 400
+#define ST_TIME SU_TIME
+#define POR_TIME 650
+#define CM_TO_OTHER_TIME 7
+#define OTHER_TO_CM_TIME 19
+
+//SYS_STATUS codes
+#define STATUS_IDLE 0
+#define STATUS_ERROR 1
+#define STATUS_SELFTEST 4
+#define STATUS_FUSION 5
+#define STATUS_NONFUSION 6
 
 /***** PAGE 0 *****/
 
@@ -21,12 +37,14 @@
 #define CALIB_STAT_ADDR 0x35
 #define ST_RESULT_ADDR 0x36
 #define INT_STA_ADDR 0x37
-#define SYS_ERROR_ADDR 0x38
+#define SYS_CLK_STATUS_ADDR 0x38
 #define SYS_STATUS_ADDR 0x39
+#define SYS_ERROR_ADDR 0x3A
 #define UNIT_SEL_ADDR 0x3B
 #define OPR_MODE_ADDR 0x3D
 #define PWR_MODE_ADDR 0x3E
-#define SYS_TRIGGER 0x3F
+#define SYS_TRIGGER_ADDR 0x3F
+#define TEMP_SOURCE_ADDR 0x40
 
 //OFFSETS
 #define ACC_OFFSET_X_LSB_ADDR 0x55
@@ -83,7 +101,8 @@ class BNO
 		uint8_t getCalibration();
 		void saveOffsets(unsigned int address);
 		void loadOffsets(unsigned int address);
-		void startBNO();
+        void printOffsets();
+        void startBNO();
 		void serialPrintCalibStat();
 		void setReference();
 		int16_t getRLHeading();
@@ -92,6 +111,7 @@ class BNO
 		int16_t getPitch();
 		int16_t getRoll();
 		int16_t getZAccel();
+        int8_t getTemp();
 
 private:
 		struct sysInfo

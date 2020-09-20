@@ -116,15 +116,50 @@ void BNO::loadOffsets(unsigned int address)	//loads offsets structure from eepro
 	}
 }
 
+void BNO::printOffsets() {
+    if (!_cached) {
+        getOffsets(&_offsetData);
+        _offsetCache = _offsetData;
+    }
+    int16_t * pstart = (int16_t *) &_offsetData;
+    for (auto pi = pstart; pi < (pstart + sizeof(calibOffsets)/sizeof(int16_t)); pi++) {
+        Serial.println(*pi);
+    }
+}
+
 void BNO::startBNO()	//enables High_g Interrupt and puts the Compass into NDOF fusion mode
 {
-	if (_initialized)
-	{
-		return;
-	}
-	writeRegister(PAGE_ID_ADDR, 0);
-	writeRegister(OPR_MODE_ADDR, OPR_MODE_CONFIG);
-	delay(19);
+    if (_initialized) {
+        return;
+    }
+    Serial.println(F("Restarting BNO055..."));
+    // RESET to start
+    writeRegister(SYS_TRIGGER_ADDR, 0x20);
+    delay(POR_TIME);
+
+    //CONFIG MODE
+
+    // no need to switch into config mode, default mode after reset
+    //writeRegister(PAGE_ID_ADDR, 0);
+    //writeRegister(OPR_MODE_ADDR, OPR_MODE_CONFIG);
+    //delay(CM_SWITCH_TO_TIME);
+    int8_t res = readRegister(CHIP_ID_ADDR);
+    Serial.print(F("BNO055 chip ID: "));
+    Serial.println(res, HEX);
+    res = readRegister(SYS_STATUS_ADDR);
+    Serial.print(F("SYS_STATUS: "));
+
+    // self-test
+    writeRegister(SYS_TRIGGER_ADDR, 1);
+    delay(ST_TIME);
+    res = readRegister(SYS_STATUS_ADDR);
+    Serial.print(F("BIST SYS_STATUS: "));  Serial.println(res, DEC);
+    if (res == 1) {
+        res = readRegister(SYS_ERROR_ADDR);
+        Serial.print(F("SYS_ERROR: ")); Serial.println(res, DEC);
+        return;
+    }
+
 	writeRegister(PAGE_ID_ADDR, 1);
 	//Enable High-G Interrupt
 	writeRegister(PAGE_ID_ADDR, 1);
@@ -143,15 +178,15 @@ void BNO::startBNO()	//enables High_g Interrupt and puts the Compass into NDOF f
 
 	//Change Operation mode
 	writeRegister(PAGE_ID_ADDR, 0);
-
 	writeRegister(OPR_MODE_ADDR, OPR_MODE_NDOF);
-	delay(19);
+	delay(CM_TO_OTHER_TIME);
+	//NDOF MODE?
 
-	uint8_t sysStatus = readRegister(SYS_STATUS_ADDR);
-	if(sysStatus != 5)
+	res = readRegister(SYS_STATUS_ADDR);
+    Serial.print(F("SYS_STATUS: "));  Serial.println(res, DEC);
+    if(res != STATUS_FUSION)
 	{
-		Serial.print(F("SYS_STATUS:\t"));  Serial.println(sysStatus, DEC);
-		Serial.println(F("SYS_STATUS should be 5!"));
+		Serial.println(F("SYS_STATUS should be STATUS_FUSION(5)!"));
 	}
 	else
     {
@@ -193,6 +228,12 @@ int16_t BNO::getZAccel()
 {
     uint16_t z_accel = readRegister16(ACC_Z_LSB_ADDR);
     return z_accel/16;
+}
+
+int8_t BNO::getTemp()
+{
+    uint8_t temp = readRegister(TEMP_SOURCE_ADDR);
+    return temp;
 }
 
 /***** Private Functions *****/
